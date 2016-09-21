@@ -1,13 +1,12 @@
  // Initialize Firebase
- console.log('hello')
- var config = {
-   apiKey: "AIzaSyBuJXH1KaAiek-h6sYgROsJtMY1Q1DSKKE",
-   authDomain: "testing-3f6ec.firebaseapp.com",
-   databaseURL: "https://testing-3f6ec.firebaseio.com",
-   storageBucket: "testing-3f6ec.appspot.com",
-   messagingSenderId: "207518226344"
- };
- firebase.initializeApp(config);
+  var config = {
+    apiKey: "AIzaSyBMBQgX-IHiiKLgmz8jL_CJzCwBFXhhd1Q",
+    authDomain: "train-schedule-95307.firebaseapp.com",
+    databaseURL: "https://train-schedule-95307.firebaseio.com",
+    storageBucket: "",
+    messagingSenderId: "707178885782"
+  };
+  firebase.initializeApp(config);
 
  var database = firebase.database();
 
@@ -15,36 +14,42 @@ database.ref().on("value", function(snapshot) {
   
 
   var data = snapshot.val();
-  $('.crap').empty();
+  $('.trainData').empty();
   $.each(data, function(key, value){
     console.log(value);
     var converted = moment(new Date(value.start)).format("X");
-    var monthsDiff = moment(converted).diff(moment(), "months");
-    monthsDiff = parseInt(monthsDiff)
-    console.log(monthsDiff)
+    var Diff = moment(converted).diff(moment(), "minutes") % value.freq;
+    var nextTime = moment.add(Diff, 'm')
+    var converted = moment(nextTime).format("LTS")
+    // monthsDiff = parseInt(monthsDiff)
+    // console.log(monthsDiff)
+
+    // Add More Stuff here
+
+
     var newRow = $('<tr>');
 
-    newRow.addClass("crap")
+    newRow.addClass("trainData")
     var nameTd = $('<td>');
-    var roleTd = $('<td>');
-    var startTd = $('<td>');
-    var monthTd = $('<td>');
-    var rateTd = $('<td>');
-    var totalTd = $('<td>');
+    var destTd = $('<td>');
+    var ftTd = $('<td>');
+    var freqTd = $('<td>');
+  
+    var nextTd = $('<td>');
 
     nameTd.text(value.name)
-    roleTd.text(value.role)
-    monthTd.text(monthsDiff)
-    startTd.text(value.start)
-    rateTd.text(value.rate)
-    totalTd.text(value.rate*monthsDiff)
+    destTd.text(value.dest)
+    monthTd.text(Diff)
+    ftTd.text(value.ft)
+    freqTd.text(converted)
+  
 
     newRow.append(nameTd)
-    newRow.append(roleTd)
-    newRow.append(startTd)
-    newRow.append(monthTd)
-    newRow.append(rateTd)
-    newRow.append(totalTd)
+    newRow.append(destTd)
+    newRow.append(ftTd)
+   
+    newRow.append(freqTd)
+    newRow.append(nextTd)
 
     $('.table').append(newRow);
 
@@ -55,21 +60,21 @@ database.ref().on("value", function(snapshot) {
 
  });
 
-$("#addEmployee").on('click', function(){
+$("#addTrain").on('click', function(){
 
     var name = $("#nameInput").val().trim();
-    var role = $("#roleInput").val().trim();
-    var start = $("#startDateInput").val().trim();
+    var dest = $("#destInput").val().trim();
+    var ft = $("#ftInput").val().trim();
     var months = 8
-    var rate = $("#monthlyRateInput").val().trim();
+    var freq = $("#freqInput").val().trim();
     var total = 8
 
     database.ref().push({
       name:name,
-      role:role,
-      start:start,
+      dest:dest,
+      ft:ft,
       months:months,
-      rate:rate,
+      freq:freq,
       total:total
     })
 
