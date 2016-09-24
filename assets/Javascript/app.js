@@ -17,10 +17,17 @@ database.ref().on("value", function(snapshot) {
   $('.trainData').empty();
   $.each(data, function(key, value){
     console.log(value);
-    var converted = moment(new Date(value.start)).format("X");
-    var Diff = moment(converted).diff(moment(), "minutes") % value.freq;
-    var nextTime = moment.add(Diff, 'm')
-    var converted = moment(nextTime).format("LTS")
+
+    var converted = moment(value.ft, "HHmm").subtract(1,"years").format("X") 
+    converted = parseInt(converted)
+    console.log(converted);
+    // debugger;
+    var Diff = parseInt(value.freq) - (moment().diff(moment(converted).format("X"), "minutes") % value.freq);
+    console.log((moment().diff(moment(converted).format("X"), "minutes") % value.freq))  
+    // var Diff = 3;
+    console.log(Diff)
+    var nextTime = moment().add(Diff, 'minutes').format("hh:mm:A")
+    // var converted = moment(nextTime).format("LTS")
     // monthsDiff = parseInt(monthsDiff)
     // console.log(monthsDiff)
 
@@ -32,23 +39,24 @@ database.ref().on("value", function(snapshot) {
     newRow.addClass("trainData")
     var nameTd = $('<td>');
     var destTd = $('<td>');
-    var ftTd = $('<td>');
+    
     var freqTd = $('<td>');
-  
+  var ftTd = $('<td>');
     var nextTd = $('<td>');
 
     nameTd.text(value.name)
     destTd.text(value.dest)
-    monthTd.text(Diff)
+    nextTd.text(Diff)
     ftTd.text(value.ft)
-    freqTd.text(converted)
+    freqTd.text(value.freq)
   
 
     newRow.append(nameTd)
     newRow.append(destTd)
+    newRow.append(freqTd)
     newRow.append(ftTd)
    
-    newRow.append(freqTd)
+    
     newRow.append(nextTd)
 
     $('.table').append(newRow);
@@ -65,17 +73,15 @@ $("#addTrain").on('click', function(){
     var name = $("#nameInput").val().trim();
     var dest = $("#destInput").val().trim();
     var ft = $("#ftInput").val().trim();
-    var months = 8
+    
     var freq = $("#freqInput").val().trim();
-    var total = 8
+   
 
     database.ref().push({
       name:name,
       dest:dest,
       ft:ft,
-      months:months,
-      freq:freq,
-      total:total
+      freq:freq
     })
 
 
